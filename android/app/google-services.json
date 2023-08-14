@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "867948555298",
+    "project_id": "coursebubble-247b2",
+    "storage_bucket": "coursebubble-247b2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:867948555298:android:758874f0c99dc8480f6e7b",
+        "android_client_info": {
+          "package_name": "com.coursebubble.chat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "867948555298-7iodsj34mqmipmink0imotpmlfqbocob.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8IHrtUUiFP6DYbA88lWUIkNY6wLD1gYE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "867948555298-7iodsj34mqmipmink0imotpmlfqbocob.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "867948555298-6jcrk23ol5tffpqs1r5rribs8gfd4ico.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.coursebubble.chat"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

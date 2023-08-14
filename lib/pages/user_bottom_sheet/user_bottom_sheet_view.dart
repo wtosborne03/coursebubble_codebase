@@ -1,0 +1,134 @@
+import 'package:coursebubble/config/app_config.dart';
+import 'package:coursebubble/utils/userData.dart';
+import 'package:flutter/material.dart';
+
+import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:matrix/matrix.dart';
+
+import 'package:coursebubble/utils/fluffy_share.dart';
+import 'package:coursebubble/widgets/avatar.dart';
+import '../../utils/matrix_sdk_extensions/presence_extension.dart';
+import '../../widgets/matrix.dart';
+import 'user_bottom_sheet.dart';
+
+class UserBottomSheetView extends StatelessWidget {
+  final UserBottomSheetController controller;
+
+  const UserBottomSheetView(this.controller, {Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final user = controller.widget.user;
+    final client = Matrix.of(context).client;
+    final presence = client.presences[user.id];
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          leading: CloseButton(
+            onPressed: Navigator.of(context, rootNavigator: false).pop,
+          ),
+          title: Text(user.calcDisplayname()),
+        ),
+        body: ListView(
+          children: [
+            Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Avatar(
+                    mxContent: user.avatarUrl,
+                    name: user.calcDisplayname(),
+                    size: Avatar.defaultSize * 2,
+                    fontSize: 24,
+                  ),
+                ),
+                Expanded(
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.only(right: 16.0),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 50,
+              child: Row(children: [
+                controller.major == null
+                    ? const SizedBox()
+                    : Container(
+                        margin: EdgeInsets.symmetric(horizontal: 16),
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                            borderRadius:
+                                BorderRadius.circular(AppConfig.borderRadius),
+                            color:
+                                Theme.of(context).colorScheme.primaryContainer),
+                        child: Text(controller.major!),
+                      ),
+              ]),
+            ),
+            presence == null
+                ? SizedBox()
+                : ListTile(
+                    contentPadding: const EdgeInsets.only(left: 20.0),
+                    title: Text(presence.getLocalizedLastActiveAgo(context)),
+                  ),
+            if (controller.widget.onMention != null)
+              ListTile(
+                leading: const Icon(Icons.alternate_email_outlined),
+                title: Text(L10n.of(context)!.mention),
+                onTap: () =>
+                    controller.participantAction(UserBottomSheetAction.mention),
+              ),
+            if (user.canChangePowerLevel)
+              ListTile(
+                title: Text(L10n.of(context)!.setPermissionsLevel),
+                leading: const Icon(Icons.edit_attributes_outlined),
+                onTap: () => controller
+                    .participantAction(UserBottomSheetAction.permission),
+              ),
+            if (user.canKick)
+              ListTile(
+                title: Text(L10n.of(context)!.kickFromChat),
+                leading: const Icon(Icons.exit_to_app_outlined),
+                onTap: () =>
+                    controller.participantAction(UserBottomSheetAction.kick),
+              ),
+            if (user.canBan && user.membership != Membership.ban)
+              ListTile(
+                title: Text(L10n.of(context)!.banFromChat),
+                leading: const Icon(Icons.warning_sharp),
+                onTap: () =>
+                    controller.participantAction(UserBottomSheetAction.ban),
+              )
+            else if (user.canBan && user.membership == Membership.ban)
+              ListTile(
+                title: Text(L10n.of(context)!.unbanFromChat),
+                leading: const Icon(Icons.warning_outlined),
+                onTap: () =>
+                    controller.participantAction(UserBottomSheetAction.unban),
+              ),
+            if (user.id != client.userID &&
+                !client.ignoredUsers.contains(user.id))
+              ListTile(
+                textColor: Theme.of(context).colorScheme.onErrorContainer,
+                iconColor: Theme.of(context).colorScheme.onErrorContainer,
+                title: Text(L10n.of(context)!.ignore),
+                leading: const Icon(Icons.block),
+                onTap: () =>
+                    controller.participantAction(UserBottomSheetAction.ignore),
+              ),
+            if (user.id != client.userID)
+              ListTile(
+                textColor: Theme.of(context).colorScheme.error,
+                iconColor: Theme.of(context).colorScheme.error,
+                title: Text(L10n.of(context)!.reportUser),
+                leading: const Icon(Icons.shield_outlined),
+                onTap: () =>
+                    controller.participantAction(UserBottomSheetAction.report),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
